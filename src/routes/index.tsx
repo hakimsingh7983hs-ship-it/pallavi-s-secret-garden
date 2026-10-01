@@ -34,7 +34,10 @@ function scrambledTiles() {
     const blank = tiles.indexOf(8);
     const options = [blank - 3, blank + 3, blank % 3 ? blank - 1 : -1, blank % 3 < 2 ? blank + 1 : -1].filter(n => n >= 0 && n < 9 && n !== last);
     const next = options[(step * 7 + 3) % options.length];
-    [tiles[blank], tiles[next]] = [tiles[next], tiles[blank]]; last = blank;
+    if (next === undefined) continue;
+    const piece = tiles[next]; const empty = tiles[blank];
+    if (piece === undefined || empty === undefined) continue;
+    tiles[blank] = piece; tiles[next] = empty; last = blank;
   }
   return tiles.every((v, i) => v === i) ? [1,0,2,3,4,5,6,8,7] : tiles;
 }
@@ -88,7 +91,9 @@ function Story() {
     if (solved) return;
     const blank = tiles.indexOf(8);
     if (!(Math.floor(index / 3) === Math.floor(blank / 3) && Math.abs(index - blank) === 1) && Math.abs(index - blank) !== 3) return;
-    const updated = [...tiles]; [updated[blank], updated[index]] = [updated[index], updated[blank]];
+    const updated = [...tiles]; const piece = updated[index]; const empty = updated[blank];
+    if (piece === undefined || empty === undefined) return;
+    updated[blank] = piece; updated[index] = empty;
     setTiles(updated); setMoves(n => n + 1); chime(440);
     if (updated.every((v,i) => v === i)) { setSolved(true); setBurst(true); chime(820); }
   };
@@ -152,7 +157,7 @@ function Story() {
       {scene === 3 && <>
         <div className="story-kicker">room four · moments worth keeping</div><h2 className="story-title text-[46px] sm:text-[76px]">Our <em>memories.</em></h2>
         <p className="story-copy text-[21px] sm:text-[30px]">Some moments just stay with you...</p>
-        <div className="memory-grid">{config.memories.map((m,i) => <motion.button key={i} className={`polaroid ${activePhoto === i ? 'active' : ''}`} style={{'--rotation':memoryRotation[i]} as React.CSSProperties} initial={{opacity:0,y:35,rotate: i%2 ? 12 : -12}} animate={{opacity:1,y:0,rotate:0}} transition={{delay:i*.1}} onClick={() => {setActivePhoto(i);setViewed(v => v.includes(i) ? v : [...v,i]); chime(500+i*35);}} aria-label={`View memory: ${m.caption}`}><img src={m.image} alt={m.caption} loading="lazy"/><span>{m.caption}</span></motion.button>)}</div>
+        <div className="memory-grid">{config.memories.map((m,i) => <motion.button key={i} className={`polaroid ${activePhoto === i ? 'active' : ''}`} style={{'--rotation':memoryRotation[i] ?? '0deg'}} initial={{opacity:0,y:35,rotate: i%2 ? 12 : -12}} animate={{opacity:1,y:0,rotate:0}} transition={{delay:i*.1}} onClick={() => {setActivePhoto(i);setViewed(v => v.includes(i) ? v : [...v,i]); chime(500+i*35);}} aria-label={`View memory: ${m.caption}`}><img src={m.image} alt={m.caption} loading="lazy"/><span>{m.caption}</span></motion.button>)}</div>
         <p className="story-small">These are some of my favorite memories with you. ❤️</p>
         {viewed.length >= 3 ? <NextButton onClick={next}>Ready for a little challenge?</NextButton> : <p className="story-small mt-5">Open {3-viewed.length} more {3-viewed.length === 1 ? 'memory' : 'memories'}...</p>}
         {config.videos.length > 0 && <div className="flex gap-2 mt-5 overflow-x-auto max-w-full">{config.videos.map((video,i) => <video key={i} controls playsInline src={video} className="w-36 aspect-video object-cover"/>)}</div>}
@@ -183,7 +188,7 @@ function Story() {
       </>}
       {scene === 8 && <>
         {!finalEntered ? <><div className="story-kicker">the final room · just for you</div><h2 className="story-title">One last <em>room...</em></h2><div className="story-hero-heart my-10"><Sparkles size={65} strokeWidth={1.1}/></div><NextButton onClick={() => {setFinalEntered(true);setBurst(true);}}>Enter ❤️</NextButton></> : <>
-          <div className="final-photo a"><img src={config.memories[0].image} alt="Memory"/></div><div className="final-photo b"><img src={config.memories[1].image} alt="Memory"/></div><div className="final-photo c"><img src={config.memories[2].image} alt="Memory"/></div>
+          <div className="final-photo a"><img src={config.memories[0]?.image ?? config.puzzleImage} alt="Memory"/></div><div className="final-photo b"><img src={config.memories[1]?.image ?? config.puzzleImage} alt="Memory"/></div><div className="final-photo c"><img src={config.memories[2]?.image ?? config.puzzleImage} alt="Memory"/></div>
           <motion.div initial={{opacity:0,scale:.7}} animate={{opacity:1,scale:1}} transition={{duration:1.3}}><div className="story-kicker">and after all of it, there is you</div><h2 className="story-title mt-6"><em>{config.names.to}.</em> ♡</h2></motion.div>
           <motion.p className="story-copy mt-8 text-[27px] sm:text-[37px]" initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1.2}}>From two strangers...</motion.p>
           <motion.p className="story-copy text-[27px] sm:text-[37px]" initial={{opacity:0}} animate={{opacity:1}} transition={{delay:2.4}}>...to two people...</motion.p>
