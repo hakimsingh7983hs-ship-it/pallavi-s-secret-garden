@@ -66,6 +66,7 @@ function Story() {
   const [knocks, setKnocks] = useState(0);
   const [doorOpen, setDoorOpen] = useState(false);
   const [letterOpen, setLetterOpen] = useState(false);
+  const [envelopeOpening, setEnvelopeOpening] = useState(false);
   const [finalEntered, setFinalEntered] = useState(false);
   const [secretTaps, setSecretTaps] = useState(0);
   const [secret, setSecret] = useState('');
@@ -178,7 +179,7 @@ function Story() {
       </>}
       {scene === 7 && <>
         <div className="story-kicker">room eight · the words I kept for you</div><h2 className="story-title text-[55px] sm:text-[85px]">A love <em>letter.</em></h2>
-        {!letterOpen ? <><div role="button" tabIndex={0} aria-label="Open the envelope to Pallavi" className="envelope" onClick={() => {setLetterOpen(true);chime(650);}} onKeyDown={e => {if(e.key === 'Enter' || e.key === ' ') setLetterOpen(true);}}><div className="envelope-label">To {config.names.to} ♡</div></div><p className="story-hand">Tap to open...</p></> : <motion.div className="w-full" initial={{opacity:0,y:80}} animate={{opacity:1,y:0}} transition={{duration:.9}}><div className="letter-paper"><p>{config.letter}</p></div><p className="story-small">Just one more thing...</p><NextButton onClick={next}>One last room</NextButton></motion.div>}
+        {!letterOpen ? <><div role="button" tabIndex={0} aria-label="Open the envelope to Pallavi" className={`envelope ${envelopeOpening ? 'open' : ''}`} onClick={() => {if (envelopeOpening) return; setEnvelopeOpening(true); chime(650); window.setTimeout(() => setLetterOpen(true), 1000);}} onKeyDown={e => {if((e.key === 'Enter' || e.key === ' ') && !envelopeOpening) { setEnvelopeOpening(true); window.setTimeout(() => setLetterOpen(true), 1000); }}}><div className="envelope-label">To {config.names.to} ♡</div></div><p className="story-hand">Tap to open...</p></> : <motion.div className="w-full" initial={{opacity:0,y:80}} animate={{opacity:1,y:0}} transition={{duration:.9}}><div className="letter-paper"><p>{config.letter}</p></div><p className="story-small">Just one more thing...</p><NextButton onClick={next}>One last room</NextButton></motion.div>}
       </>}
       {scene === 8 && <>
         {!finalEntered ? <><div className="story-kicker">the final room · just for you</div><h2 className="story-title">One last <em>room...</em></h2><div className="story-hero-heart my-10"><Sparkles size={65} strokeWidth={1.1}/></div><NextButton onClick={() => {setFinalEntered(true);setBurst(true);}}>Enter ❤️</NextButton></> : <>
