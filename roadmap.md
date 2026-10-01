@@ -1,0 +1,3 @@
+- [x] Build nine sequential interactive scenes with mobile-first animation and puzzles.
+- [x] Provide configurable memories, date, music, videos, and letter defaults.
+- [ ] Shared, no-code media editing for the recipient's device — needs a secure owner account and hosted uploads.
