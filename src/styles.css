@@ -142,3 +142,131 @@
     color: var(--color-foreground);
   }
 }
+
+/* Pallavi's storybook */
+@theme inline {
+  --color-ink-soft: var(--ink-soft);
+  --color-petal: var(--petal);
+  --color-gold: var(--gold);
+  --color-night: var(--night);
+  --color-night-foreground: var(--night-foreground);
+  --color-paper: var(--paper);
+  --color-rose-light: var(--rose-light);
+  --shadow-story: 0 10px 28px color-mix(in oklab, var(--primary) 23%, transparent);
+  --font-hand: "Caveat", cursive;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "DM Sans", sans-serif;
+}
+:root {
+  --radius: 0.45rem;
+  --background: oklch(0.974 0.022 65);
+  --foreground: oklch(0.32 0.075 350);
+  --card: oklch(0.991 0.01 65);
+  --card-foreground: oklch(0.32 0.075 350);
+  --popover: oklch(0.991 0.01 65);
+  --popover-foreground: oklch(0.32 0.075 350);
+  --primary: oklch(0.46 0.16 358);
+  --primary-foreground: oklch(0.985 0.015 65);
+  --secondary: oklch(0.89 0.058 357);
+  --secondary-foreground: oklch(0.4 0.12 355);
+  --muted: oklch(0.944 0.029 30);
+  --muted-foreground: oklch(0.55 0.061 350);
+  --accent: oklch(0.8 0.12 4);
+  --accent-foreground: oklch(0.32 0.075 350);
+  --border: oklch(0.86 0.057 13);
+  --input: oklch(0.86 0.057 13);
+  --ring: oklch(0.66 0.13 5);
+  --ink-soft: oklch(0.48 0.065 350);
+  --petal: oklch(0.89 0.061 357);
+  --gold: oklch(0.73 0.13 76);
+  --night: oklch(0.19 0.075 355);
+  --night-foreground: oklch(0.95 0.03 68);
+  --paper: oklch(0.99 0.013 75);
+  --rose-light: oklch(0.94 0.034 6);
+}
+.dark {
+  --background: oklch(0.19 0.075 355);
+  --foreground: oklch(0.97 0.022 65);
+  --card: oklch(0.25 0.075 355);
+  --card-foreground: oklch(0.97 0.022 65);
+  --primary: oklch(0.75 0.11 4);
+  --primary-foreground: oklch(0.19 0.075 355);
+  --secondary: oklch(0.32 0.09 355);
+  --muted: oklch(0.27 0.06 355);
+  --muted-foreground: oklch(0.78 0.04 10);
+  --border: oklch(0.43 0.07 355);
+  --input: oklch(0.43 0.07 355);
+  --ring: oklch(0.75 0.11 4);
+}
+body { font-family: var(--font-body); overflow-x: hidden; }
+.story { min-height: 100svh; position: relative; overflow: hidden; background: var(--background); color: var(--foreground); isolation: isolate; }
+.story::before { content: ""; position: absolute; inset: 0; opacity: .22; pointer-events: none; z-index: 0; background-image: radial-gradient(var(--gold) .55px, transparent .55px); background-size: 26px 26px; }
+.story--pink { background: var(--rose-light); }
+.story--night { background: var(--night); color: var(--night-foreground); }
+.story--final { background: radial-gradient(ellipse at 50% 45%, var(--petal), var(--background) 72%); }
+.story-shell { width: min(100% - 36px, 980px); min-height: 100svh; margin-inline: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 1; padding: 76px 0 72px; text-align: center; }
+.story-kicker { text-transform: uppercase; font-size: 10px; font-weight: 700; letter-spacing: .28em; color: var(--muted-foreground); }
+.story--night .story-kicker { color: var(--gold); }
+.story-title { font-family: var(--font-display); font-size: clamp(52px, 13vw, 105px); line-height: .95; font-weight: 500; letter-spacing: 0; margin: 12px 0; }
+.story-title em { font-weight: 400; color: var(--primary); }
+.story--night .story-title em { color: var(--gold); }
+.story-hand { font-family: var(--font-hand); font-size: clamp(30px, 8vw, 52px); line-height: 1.15; color: var(--primary); }
+.story--night .story-hand { color: var(--gold); }
+.story-copy { font-family: var(--font-display); font-size: clamp(24px, 6vw, 35px); line-height: 1.24; max-width: 600px; margin-inline: auto; }
+.story-small { font-size: 13px; line-height: 1.65; color: var(--ink-soft); }
+.story--night .story-small { color: var(--night-foreground); }
+.story-button { min-height: 54px; border-radius: 100px; padding: 0 28px; font-size: 13px; letter-spacing: .02em; }
+.story-ornament { color: var(--primary); font-family: var(--font-display); font-size: 23px; letter-spacing: .3em; }
+.story-progress { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); z-index: 6; display: flex; gap: 7px; }
+.story-progress i { display: block; width: 16px; height: 3px; border-radius: 3px; background: var(--primary); opacity: .2; transition: opacity .3s, width .3s; }
+.story-progress i.current { opacity: .9; width: 26px; }
+.story--night .story-progress i { background: var(--gold); }
+.floaties { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.floaty { position: absolute; font-family: var(--font-display); color: var(--primary); opacity: .17; animation: drift var(--duration, 8s) ease-in-out infinite alternate; font-size: var(--size, 23px); }
+.story--night .floaty { color: var(--gold); }
+@keyframes drift { from { transform: translate3d(0, 18px, 0) rotate(-12deg); } to { transform: translate3d(20px, -22px, 0) rotate(18deg); } }
+.story-hero-heart { width: 145px; height: 145px; display: grid; place-items: center; margin-bottom: 28px; color: var(--primary); border: 1px solid var(--border); border-radius: 50%; background: var(--paper); box-shadow: 0 22px 55px color-mix(in oklab, var(--primary) 12%, transparent); }
+.story-hero-heart svg { width: 74px; height: 74px; stroke-width: 1.1; }
+.tree-stage { width: min(100%, 500px); aspect-ratio: 1.15; margin-top: 8px; position: relative; }
+.tree-stage svg { width: 100%; height: 100%; overflow: visible; }
+.tree-flower { transform-origin: center; animation: bloom .65s cubic-bezier(.18,.89,.32,1.35) both; }
+@keyframes bloom { from { opacity: 0; transform: scale(0) rotate(-45deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+.tree-tap { width: 76px; height: 76px; border-radius: 50%; font-size: 32px; padding: 0; transition: transform .2s; }
+@keyframes heartbeat { 0%,100% {transform:scale(1)} 50% {transform:scale(1.07)} }
+.memory-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; width: min(100%, 690px); margin: 24px auto 18px; }
+.polaroid { border: 0; cursor: pointer; padding: 7px 7px 13px; background: var(--paper); box-shadow: 0 8px 19px color-mix(in oklab, var(--night) 15%, transparent); transform: rotate(var(--rotation)); transition: transform .35s, box-shadow .35s; min-width: 0; }
+.polaroid:hover, .polaroid:focus-visible { transform: rotate(0) translateY(-5px) scale(1.04); z-index: 2; }
+.polaroid img { width: 100%; aspect-ratio: 4/4; object-fit: cover; }
+.polaroid span { font-family: var(--font-hand); color: var(--foreground); display: block; font-size: clamp(14px, 3.8vw, 22px); line-height: 1; margin-top: 9px; }
+.polaroid.active { transform: rotate(0) scale(1.12); z-index: 5; box-shadow: 0 18px 35px color-mix(in oklab, var(--night) 25%, transparent); }
+.puzzle { display: grid; grid-template-columns: repeat(3, 1fr); width: min(82vw, 340px); aspect-ratio: 1; gap: 3px; padding: 5px; background: var(--paper); box-shadow: 0 14px 36px color-mix(in oklab, var(--primary) 18%, transparent); margin: 25px auto 12px; }
+.puzzle-piece { border: 0; border-radius: 1px; background-size: 300% 300%; background-repeat: no-repeat; cursor: pointer; touch-action: manipulation; transition: transform .18s; }
+.puzzle-piece:active { transform: scale(.93); }
+.puzzle-empty { background: var(--muted); display: grid; place-items: center; color: var(--primary); opacity: .4; }
+.door-scene { margin: 23px auto 12px; height: min(53svh, 440px); width: min(76vw, 310px); perspective: 950px; position: relative; }
+.door-light { position: absolute; inset: 5px; border-radius: 110px 110px 3px 3px; background: radial-gradient(ellipse at 50% 50%, var(--paper), var(--gold) 63%, var(--primary)); box-shadow: 0 0 65px var(--gold); }
+.door { position: relative; height: 100%; width: 100%; border-radius: 115px 115px 4px 4px; border: 8px solid var(--gold); background: linear-gradient(105deg, var(--primary), var(--night) 48%, var(--primary)); box-shadow: inset 0 0 0 5px color-mix(in oklab, var(--gold) 45%, transparent), 0 20px 65px color-mix(in oklab, var(--gold) 23%, transparent); transform-origin: left center; cursor: pointer; transition: transform 1.5s cubic-bezier(.16,.7,.18,1), filter .3s; }
+.door.open { transform: rotateY(-105deg); }
+.door-panel { position: absolute; inset: 20px; border: 2px solid color-mix(in oklab, var(--gold) 70%, transparent); border-radius: 98px 98px 2px 2px; }
+.door-panel::after { content: ''; position: absolute; inset: 42% 17% 8%; border: 1px solid color-mix(in oklab, var(--gold) 45%, transparent); }
+.door-knob { position: absolute; right: 24px; top: 58%; width: 17px; height: 17px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 16px var(--gold); }
+.couple-art { width: min(82vw, 365px); height: min(37svh, 315px); object-fit: contain; margin: 10px auto; filter: drop-shadow(0 12px 18px color-mix(in oklab, var(--primary) 13%, transparent)); }
+.envelope { position: relative; width: min(84vw, 370px); height: 250px; margin: 60px auto 30px; cursor: pointer; perspective: 1000px; background: var(--petal); box-shadow: 0 22px 45px color-mix(in oklab, var(--primary) 20%, transparent); }
+.envelope::before { content: ''; position: absolute; inset: 0; background: var(--secondary); clip-path: polygon(0 0,50% 58%,100% 0); transform-origin: top; z-index: 3; transition: transform .8s; }
+.envelope.open::before { transform: rotateX(180deg); z-index: 0; }
+.envelope::after { content: ''; position: absolute; inset: 0; background: var(--petal); clip-path: polygon(0 100%, 50% 46%, 100% 100%); z-index: 2; }
+.envelope-label { position: relative; z-index: 4; top: 67%; font: 33px var(--font-hand); color: var(--primary); }
+.letter-paper { width: min(100%, 590px); max-height: min(60svh, 650px); overflow-y: auto; overscroll-behavior: contain; padding: 30px clamp(22px, 5vw, 46px); margin: 18px auto; background: var(--paper); box-shadow: 0 15px 45px color-mix(in oklab, var(--primary) 12%, transparent); border: 1px solid var(--border); text-align: left; scrollbar-color: var(--accent) transparent; }
+.letter-paper p { font-family: var(--font-hand); white-space: pre-line; font-size: clamp(24px, 5.7vw, 32px); line-height: 1.24; }
+.final-photo { position: absolute; width: 85px; border: 5px solid var(--paper); border-bottom-width: 16px; box-shadow: 0 6px 16px color-mix(in oklab, var(--night) 15%, transparent); opacity: .55; }
+.final-photo img { aspect-ratio: 1; width: 100%; object-fit: cover; }
+.final-photo.a { top: 13%; left: 7%; transform: rotate(-13deg); } .final-photo.b { top: 18%; right: 7%; transform: rotate(13deg); } .final-photo.c { bottom: 9%; left: 9%; transform: rotate(9deg); }
+.secret-note { position: fixed; z-index: 30; bottom: 90px; left: 50%; transform: translateX(-50%); width: min(88vw, 330px); padding: 20px; background: var(--paper); color: var(--primary); font: 27px/1.1 var(--font-hand); box-shadow: 0 12px 35px color-mix(in oklab, var(--night) 18%, transparent); text-align: center; }
+.customize { position: fixed; top: 19px; right: 18px; z-index: 20; }
+.customize-toggle { color: var(--muted-foreground); border: 0; background: transparent; cursor: pointer; font-size: 11px; opacity: .7; }
+.customize-panel { position: absolute; top: 31px; right: 0; width: min(90vw, 340px); max-height: min(75svh, 600px); overflow: auto; background: var(--paper); border: 1px solid var(--border); box-shadow: 0 20px 45px color-mix(in oklab, var(--night) 16%, transparent); text-align: left; padding: 20px; color: var(--foreground); }
+.customize-panel label { display: block; font-size: 12px; margin: 10px 0; font-weight: 600; }
+.customize-panel input, .customize-panel textarea { width: 100%; display: block; border: 1px solid var(--border); background: var(--background); padding: 9px; margin-top: 4px; border-radius: 3px; font-weight: 400; }
+.customize-panel textarea { height: 90px; resize: vertical; }
+@media (max-width: 420px) { .memory-grid { gap: 8px; } .polaroid { padding: 5px 5px 11px; } .story-shell { padding-top: 68px; padding-bottom: 54px; } .story-title { font-size: 56px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
