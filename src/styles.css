@@ -268,6 +268,7 @@ body { font-family: var(--font-body); overflow-x: hidden; }
 .final-photo { position: absolute; width: 85px; border: 5px solid var(--paper); border-bottom-width: 16px; box-shadow: 0 6px 16px color-mix(in oklab, var(--night) 15%, transparent); opacity: .55; }
 .final-photo img { aspect-ratio: 1; width: 100%; object-fit: cover; }
 .final-photo.a { top: 13%; left: 7%; transform: rotate(-13deg); } .final-photo.b { top: 18%; right: 7%; transform: rotate(13deg); } .final-photo.c { bottom: 9%; left: 9%; transform: rotate(9deg); }
+@media (max-width: 500px) { .final-photo { width: 57px; opacity: .6; } .final-photo.a { top: 20%; left: 1%; } .final-photo.b { top: 20%; right: 1%; } .final-photo.c { bottom: 11%; left: 1%; } }
 .secret-note { position: fixed; z-index: 30; bottom: 90px; left: 50%; transform: translateX(-50%); width: min(88vw, 330px); padding: 20px; background: var(--paper); color: var(--primary); font: 27px/1.1 var(--font-hand); box-shadow: 0 12px 35px color-mix(in oklab, var(--night) 18%, transparent); text-align: center; }
 .customize { position: fixed; top: 19px; right: 18px; z-index: 20; }
 .customize-toggle { color: var(--muted-foreground); border: 0; background: transparent; cursor: pointer; font-size: 11px; opacity: .7; }
