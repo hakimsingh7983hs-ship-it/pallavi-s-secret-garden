@@ -23,6 +23,8 @@ const flowers = [
   [85,93],[110,65],[140,105],[161,68],[196,82],[219,50],[249,89],[270,58],[302,99],[330,72],
   [63,128],[113,132],[151,139],[187,119],[221,137],[265,128],[309,140],[349,118],
   [95,169],[143,178],[184,158],[234,173],[287,168],[335,161],
+  [44,95],[78,53],[124,91],[175,45],[216,112],[281,29],[320,48],[367,87],
+  [55,178],[101,200],[155,116],[203,187],[252,152],[298,193],[342,190],[360,148],
 ] as const;
 const flowerColors = ['var(--primary)', 'var(--accent)', 'var(--gold)', 'var(--paper)', 'var(--petal)'];
 const floatData = Array.from({ length: 18 }, (_, i) => ({ left: `${(i * 47 + 7) % 95}%`, top: `${(i * 31 + 9) % 91}%`, duration: `${6 + i % 6}s`, size: `${13 + i % 4 * 6}px`, glyph: i % 3 === 0 ? '✿' : i % 3 === 1 ? '♡' : '✦' }));
@@ -76,6 +78,8 @@ function Story() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
   const [burst, setBurst] = useState(false);
+  const [musicEnded, setMusicEnded] = useState(false);
+  const [musicError, setMusicError] = useState(false);
   const audio = useRef<HTMLAudioElement>(null);
   const audioContext = useRef<AudioContext | null>(null);
   const reduceMotion = useReducedMotion();
@@ -83,6 +87,13 @@ function Story() {
   useEffect(() => { if (!secret) return; const timer = window.setTimeout(() => setSecret(''), 4500); return () => clearTimeout(timer); }, [secret]);
   useEffect(() => { if (!burst) return; const timer = window.setTimeout(() => setBurst(false), 1700); return () => clearTimeout(timer); }, [burst]);
   const next = () => { setBurst(true); setScene(n => Math.min(n+1, 8)); };
+  const openSurprise = () => {
+    if (audio.current && config.music && !musicEnded) {
+      audio.current.currentTime = 0;
+      audio.current.play().then(() => setSoundOn(true)).catch(() => setMusicError(true));
+    }
+    next();
+  };
   const chime = (freq = 540) => {
     if (!soundOn) return;
     try { const ctx = audioContext.current ?? new AudioContext(); audioContext.current = ctx; const oscillator = ctx.createOscillator(); const gain = ctx.createGain(); oscillator.type = 'sine'; oscillator.frequency.setValueAtTime(freq, ctx.currentTime); oscillator.frequency.exponentialRampToValueAtTime(freq * .75, ctx.currentTime + .22); gain.gain.setValueAtTime(.055, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .28); oscillator.connect(gain).connect(ctx.destination); oscillator.start(); oscillator.stop(ctx.currentTime + .3); } catch { /* audio is optional */ }
@@ -110,10 +121,14 @@ function Story() {
     if (kind === 'music') setConfig(c => ({ ...c, music: url }));
     if (kind === 'video') setConfig(c => ({ ...c, videos: [...c.videos, url] }));
   };
-  const toggleSound = () => { setSoundOn(v => !v); if (!soundOn && audio.current) audio.current.play().catch(() => {}); else audio.current?.pause(); };
+  const toggleSound = () => {
+    if (musicEnded || musicError || !config.music) return;
+    if (soundOn) { audio.current?.pause(); setSoundOn(false); }
+    else { audio.current?.play().then(() => setSoundOn(true)).catch(() => setMusicError(true)); }
+  };
   const sceneClass = `story ${scene === 5 ? 'story--night' : scene === 1 || scene === 3 ? 'story--pink' : scene === 8 ? 'story--final' : ''}`;
   return <main className={sceneClass}>
-    {config.music && <audio ref={audio} loop src={config.music}/>}
+    {config.music && <audio ref={audio} src={config.music} preload="auto" onEnded={() => {setMusicEnded(true);setSoundOn(false);}} onError={() => setMusicError(true)}/>}
     <div className="story-progress" aria-label={`Room ${scene+1} of 9`}>{Array.from({length:9},(_,i) => <i key={i} className={i <= scene ? 'current' : ''}/>)}</div>
     <div className="customize">
       <button className="customize-toggle" onClick={() => setSettingsOpen(v => !v)} aria-label="Customize story" title="Customize story"><Settings2 size={17}/></button>
@@ -130,14 +145,15 @@ function Story() {
         <label>Video memory<input type="file" accept="video/*" onChange={e => upload(e.target.files?.[0],'video')}/></label>
       </div>}
     </div>
-    {scene > 0 && <Button variant="ghost" size="icon" className="absolute bottom-5 left-5 z-10 opacity-60" onClick={toggleSound} aria-label={soundOn ? 'Mute sound' : 'Turn on sound'} title={soundOn ? 'Mute sound' : 'Turn on sound'}>{soundOn ? <Volume2/> : <VolumeX/>}</Button>}
+    {scene > 0 && !musicEnded && !musicError && config.music && <Button variant="ghost" size="icon" className="absolute bottom-5 left-5 z-10 opacity-60" onClick={toggleSound} aria-label={soundOn ? 'Pause music' : 'Resume music'} title={soundOn ? 'Pause music' : 'Resume music'}>{soundOn ? <Volume2/> : <VolumeX/>}</Button>}
     <Floaties many={scene === 8}/>
-    <AnimatePresence mode="wait"><motion.div key={scene} className="story-shell" initial={{ opacity:0, scale: reduceMotion ? 1 : .94, y: reduceMotion ? 0 : 20 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale: reduceMotion ? 1 : 1.06, y: reduceMotion ? 0 : -18 }} transition={{ duration: reduceMotion ? 0 : .75, ease:'easeInOut' }}>
+    <AnimatePresence mode="wait"><motion.div key={scene} className="story-shell" initial={{ opacity:0, scale: reduceMotion ? 1 : .985, y: reduceMotion ? 0 : 16 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale: reduceMotion ? 1 : 1.015, y: reduceMotion ? 0 : -14 }} transition={{ duration: reduceMotion ? 0 : .62, ease:[.22,1,.36,1] }}>
       {scene === 0 && <>
-        <motion.div className="story-hero-heart" animate={reduceMotion ? {} : { y:[0,-9,0], rotate:[-4,3,-4] }} transition={{duration:4,repeat:Infinity}}><Heart fill="currentColor"/></motion.div>
+        <div className="opening-bouquet" aria-hidden="true">{Array.from({length:24},(_,i) => <span key={i} className="opening-flower" style={{'--flower-angle':`${i*15}deg`,'--flower-distance':`${110+i%4*20}px`,'--flower-delay':`${i*.08}s`}}>{i%4===0 ? '✿' : i%3===0 ? '❀' : '✾'}</span>)}</div>
+        <motion.div className="story-hero-heart" animate={reduceMotion ? {} : { y:[0,-5,0], rotate:[-2,2,-2] }} transition={{duration:5,repeat:Infinity,ease:'easeInOut'}}><Heart fill="currentColor"/></motion.div>
         <div className="story-kicker">A little world, made just for you</div>
         <h1 className="story-title">Hey <em>{config.names.to}.</em> <span className="inline-block text-[.5em] align-middle">♡</span></h1>
-        <AnimatePresence>{ready && <motion.div initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:.8}}><p className="story-hand mt-4">I made something for you...</p><p className="story-small mt-7">Are you ready?</p><NextButton onClick={next}>Open your surprise</NextButton></motion.div>}</AnimatePresence>
+        <AnimatePresence>{ready && <motion.div initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:.8}}><p className="story-hand mt-4">I made something for you...</p><p className="story-small mt-7">Are you ready?</p><NextButton onClick={openSurprise}>Open your surprise</NextButton></motion.div>}</AnimatePresence>
         <span className="story-ornament mt-16">✦ &nbsp; ♡ &nbsp; ✦</span>
       </>}
       {scene === 1 && <>
@@ -152,7 +168,7 @@ function Story() {
         <h2 className="story-title text-[48px] sm:text-[70px]">The love <em>tree.</em></h2>
         <p className="story-copy text-[23px] sm:text-[30px]">{blooms >= flowers.length ? 'Look what you helped me grow. ❤️' : 'Something beautiful needs a little love...'}</p>
         <Tree blooms={blooms} onTap={next}/>
-        {blooms < flowers.length ? <><Button variant="story" className="tree-tap" onClick={() => { setBlooms(n => Math.min(n+4,flowers.length)); chime(500+blooms*13); }} aria-label="Tap the heart to grow flowers">♥</Button><p className="story-small mt-3">Tap the heart ♡ &nbsp; {Math.ceil((flowers.length-blooms)/4)} more to bloom</p></> : <><p className="story-hand">Our little world.</p><p className="story-small mt-2">Tap the flowers...</p></>}
+        {blooms < flowers.length ? <><Button variant="story" className="tree-tap" onClick={() => { setBlooms(n => Math.min(n+5,flowers.length)); chime(500+blooms*13); }} aria-label="Tap the heart to grow flowers">♥</Button><p className="story-small mt-3">Tap the heart ♡ &nbsp; {Math.ceil((flowers.length-blooms)/5)} more to bloom</p></> : <><p className="story-hand">Our little world.</p><p className="story-small mt-2">Tap the flowers...</p></>}
       </>}
       {scene === 3 && <>
         <div className="story-kicker">room four · moments worth keeping</div><h2 className="story-title text-[46px] sm:text-[76px]">Our <em>memories.</em></h2>
