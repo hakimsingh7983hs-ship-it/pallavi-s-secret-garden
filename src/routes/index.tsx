@@ -110,7 +110,11 @@ function Story() {
   const knock = () => {
     if (doorOpen) return;
     chime(160);
-    setKnocks(n => { if (n >= 2) { setDoorOpen(true); window.setTimeout(next, 1800); return 3; } return n+1; });
+    if (knocks >= 2) {
+      setKnocks(3);
+      setDoorOpen(true);
+      window.setTimeout(() => { setBurst(true); setScene(6); }, 1800);
+    } else setKnocks(knocks + 1);
   };
   const upload = (file: File | undefined, kind: 'memory' | 'puzzle' | 'music' | 'video', index = 0) => {
     if (!file) return;
