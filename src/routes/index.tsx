@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Heart, ArrowRight, Volume2, VolumeX, Sparkles, X, Settings2, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { storyConfig } from '@/lib/story-config';
@@ -28,7 +28,6 @@ const flowers = [
 ] as const;
 const flowerColors = ['var(--primary)', 'var(--accent)', 'var(--gold)', 'var(--paper)', 'var(--petal)'];
 const floatData = Array.from({ length: 18 }, (_, i) => ({ left: `${(i * 47 + 7) % 95}%`, top: `${(i * 31 + 9) % 91}%`, duration: `${6 + i % 6}s`, size: `${13 + i % 4 * 6}px`, glyph: i % 3 === 0 ? '✿' : i % 3 === 1 ? '♡' : '✦' }));
-const memoryRotation = ['-8deg','6deg','-4deg','8deg','-6deg','4deg'];
 const initialTiles = [0,1,2,3,4,5,6,7,8];
 function scrambledTiles() {
   const tiles = [...initialTiles]; let last = -1;
@@ -149,7 +148,7 @@ function Story() {
     <Floaties many={scene === 8}/>
     <AnimatePresence mode="wait"><motion.div key={scene} className="story-shell" initial={{ opacity:0, scale: reduceMotion ? 1 : .985, y: reduceMotion ? 0 : 16 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale: reduceMotion ? 1 : 1.015, y: reduceMotion ? 0 : -14 }} transition={{ duration: reduceMotion ? 0 : .62, ease:[.22,1,.36,1] }}>
       {scene === 0 && <>
-        <div className="opening-bouquet" aria-hidden="true">{Array.from({length:24},(_,i) => <span key={i} className="opening-flower" style={{'--flower-angle':`${i*15}deg`,'--flower-distance':`${110+i%4*20}px`,'--flower-delay':`${i*.08}s`}}>{i%4===0 ? '✿' : i%3===0 ? '❀' : '✾'}</span>)}</div>
+        <div className="opening-bouquet" aria-hidden="true">{Array.from({length:24},(_,i) => <span key={i} className="opening-flower" style={{'--flower-angle':`${i*15}deg`,'--flower-distance':`${85+i%4*10}px`,'--flower-delay':`${i*.08}s`} as CSSProperties}>{i%4===0 ? '✿' : i%3===0 ? '❀' : '✾'}</span>)}</div>
         <motion.div className="story-hero-heart" animate={reduceMotion ? {} : { y:[0,-5,0], rotate:[-2,2,-2] }} transition={{duration:5,repeat:Infinity,ease:'easeInOut'}}><Heart fill="currentColor"/></motion.div>
         <div className="story-kicker">A little world, made just for you</div>
         <h1 className="story-title">Hey <em>{config.names.to}.</em> <span className="inline-block text-[.5em] align-middle">♡</span></h1>
@@ -173,7 +172,7 @@ function Story() {
       {scene === 3 && <>
         <div className="story-kicker">room four · moments worth keeping</div><h2 className="story-title text-[46px] sm:text-[76px]">Our <em>memories.</em></h2>
         <p className="story-copy text-[21px] sm:text-[30px]">Some moments just stay with you...</p>
-        <div className="memory-grid">{config.memories.map((m,i) => <motion.button key={i} className={`polaroid ${activePhoto === i ? 'active' : ''}`} style={{'--rotation':memoryRotation[i] ?? '0deg'}} initial={{opacity:0,y:35,rotate: i%2 ? 12 : -12}} animate={{opacity:1,y:0,rotate:0}} transition={{delay:i*.1}} onClick={() => {setActivePhoto(i);setViewed(v => v.includes(i) ? v : [...v,i]); chime(500+i*35);}} aria-label={`View memory: ${m.caption}`}><img src={m.image} alt={m.caption} loading="lazy"/><span>{m.caption}</span></motion.button>)}</div>
+        <div className="memory-grid">{config.memories.map((m,i) => <motion.button key={i} className={`polaroid ${activePhoto === i ? 'active' : ''}`} initial={{opacity:0,y:35,rotate: i%2 ? 12 : -12}} animate={{opacity:1,y:0,rotate:0}} transition={{delay:i*.1}} onClick={() => {setActivePhoto(i);setViewed(v => v.includes(i) ? v : [...v,i]); chime(500+i*35);}} aria-label={`View memory: ${m.caption}`}><img src={m.image} alt={m.caption} loading="lazy"/><span>{m.caption}</span></motion.button>)}</div>
         <p className="story-small">These are some of my favorite memories with you. ❤️</p>
         {viewed.length >= 3 ? <NextButton onClick={next}>Ready for a little challenge?</NextButton> : <p className="story-small mt-5">Open {3-viewed.length} more {3-viewed.length === 1 ? 'memory' : 'memories'}...</p>}
         {config.videos.length > 0 && <div className="flex gap-2 mt-5 overflow-x-auto max-w-full">{config.videos.map((video,i) => <video key={i} controls playsInline src={video} className="w-36 aspect-video object-cover"/>)}</div>}
